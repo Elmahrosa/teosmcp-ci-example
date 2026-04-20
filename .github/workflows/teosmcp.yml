@@ -1,35 +1,22 @@
-name: TeosMCP Decision Gate
+name: TEOS Sentinel Gate
 
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
+on: [pull_request]
 
 jobs:
-  teosmcp-gate:
+  teos-gate:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: read
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Fetch base branch
-        run: |
-          git fetch origin ${{ github.base_ref }} --depth=1
+      - name: Generate diff
+        run: git diff origin/main HEAD > diff.txt
 
-      - name: Compute diff
-        id: diff
-        run: |
-          git diff --unified=0 origin/${{ github.base_ref }}...HEAD > /tmp/pr.diff
-          echo "diff_path=/tmp/pr.diff" >> $GITHUB_OUTPUT
-
-      - name: TeosMCP gate
+      - name: Run TEOS Sentinel Gate
         env:
-          TEOSMCP_URL: ${{ secrets.TEOSMCP_URL }}
-          TEOSMCP_API_KEY: ${{ secrets.TEOSMCP_API_KEY }}
+          TEOSMCP_URL: https://teoslinker.railway.app/api/ci/scan
+          TEOSMCP_API_KEY: ${{ secrets.TEOS_CI_TOKEN }}
         run: |
-          bash scripts/teosmcp-gate.sh "${{ steps.diff.outputs.diff_path }}"
+          chmod +x scripts/teosmcp-gate.sh
+          ./scripts/teosmcp-gate.sh diff.txt
