@@ -1,0 +1,22 @@
+﻿name: TEOS Sentinel Gate
+
+on: [pull_request]
+
+jobs:
+  teos-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate diff
+        run: git diff origin/main HEAD > diff.txt
+
+      - name: Run TEOS Sentinel Gate
+        env:
+          TEOSMCP_URL: ${{ secrets.TEOSMCP_URL }}
+          TEOSMCP_API_KEY: ${{ secrets.TEOSMCP_API_KEY }}
+        run: |
+          chmod +x scripts/teosmcp-gate.sh
+          ./scripts/teosmcp-gate.sh diff.txt
