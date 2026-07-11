@@ -1,0 +1,5 @@
+# TEOS Platform CODEOWNERS — Phase 0
+* @Elmahrosa/teos-platform @Elmahrosa/elmahrosa-exec
+/.github/ @Elmahrosa/teos-security @Elmahrosa/teos-platform
+/security/ @Elmahrosa/teos-security
+SECURITY.md @Elmahrosa/teos-security
